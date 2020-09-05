@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Evens Number </title>
+</head>
+<body>
+<h1>Showing Even Numbers from 1 to 10</h1>
+<ul>
+    {% for x in range(1, 11) %}
+        {% if x%2==0 %}
+        <li>{{x}}</li>
+        {% endif %}
+    {% endfor %}
+</ul>    
+</body>
+</html>
