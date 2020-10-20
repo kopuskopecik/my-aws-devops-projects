@@ -66,7 +66,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: '3306'
           ToPort: '3306'
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupName: !Ref MyVPCId
 
   DBInstance:
     Type: "AWS::RDS::DBInstance"
@@ -83,36 +83,6 @@ Resources:
         - !GetAtt MySecurityGroup.GroupId
   
 
-
-  MyLoadBalancingTargetGroup:
-    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
-    Properties:
-      HealthCheckIntervalSeconds: 25
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 3
-      Port: 80
-      Protocol: HTTP
-      UnhealthyThresholdCount: 3
-      VpcId: !Ref MyVPCId
-  
-  MyLoadBalancerListener:
-    Type: "AWS::ElasticLoadBalancingV2::Listener"
-    Properties:
-      DefaultActions: #required
-        - TargetGroupArn: !Ref MyLoadBalancingTargetGroup
-          Type: forward
-      LoadBalancerArn: !Ref MyLoadBalancer
-      Port: 80 #required
-      Protocol: HTTP #required
-  
-  MyLoadBalancer:
-    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
-    Properties:
-      SecurityGroups:
-        - !GetAtt MySecurityGroup.GroupId
-      Subnets:
-        !Ref MySubnets
-  
   MyLaunchTemplate:
     Type: "AWS::EC2::LaunchTemplate"
     Properties:
@@ -143,36 +113,3 @@ Resources:
               wget https://raw.githubusercontent.com/kopuskopecik/my-aws-devops-projects/master/aws/projects/004-phonebook-web-application/templates/index.html
               cd ..
               python3 phonebook-app.py
-  
-  MyAutoScalingGroup:
-    Type: "AWS::AutoScaling::AutoScalingGroup"
-    Properties:
-      AvailabilityZones: !GetAZs 
-      DesiredCapacity: "2"
-      HealthCheckGracePeriod: 90
-      HealthCheckType: ELB
-      LaunchTemplate:
-        LaunchTemplateId: !Ref MyLaunchTemplate
-        Version: !GetAtt MyLaunchTemplate.LatestVersionNumber
-      MaxSize: "3" #required
-      MinSize: "1" #required
-      TargetGroupARNs:
-        - !Ref MyLoadBalancingTargetGroup
-
-  myCPUPolicy:
-    Type: "AWS::AutoScaling::ScalingPolicy"
-    Properties:
-      AutoScalingGroupName: !Ref MyAutoScalingGroup
-      PolicyType: TargetTrackingScaling
-      TargetTrackingConfiguration:
-        PredefinedMetricSpecification:
-          PredefinedMetricType: ASGAverageCPUUtilization
-        TargetValue: !Ref PolicyTargetValue
-    
-Outputs:
-  URL:
-    Description: The URL of the website
-    Value: !Join 
-      - ''
-      - - 'http://'
-        - !GetAtt MyLoadBalancer.DNSName

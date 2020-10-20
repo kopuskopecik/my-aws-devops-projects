@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Cloudformation template for milliseconds converter application. 
+Resources:
+  AppNode:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0947d2ba12ee1ff75
+      KeyName: mykeypair
+      SecurityGroups:
+        - !Ref AppNodeSG
+      UserData: 
+          Fn::Base64:
+            !Sub 
+              - |
+                #! /bin/bash
+                yum update -y
+                yum install python3 -y 
+                pip3 install flask
+                pip3 install flask-mysql
+                wget https://raw.githubusercontent.com/kopuskopecik/my-aws-devops-projects/master/aws/projects/004-phonebook-web-application/phonebook-app.py -P /home/ec2-user
+                echo "${Merhaba}" >> /home/ec2-user/dbserver.endpoint              
+                wget https://raw.githubusercontent.com/kopuskopecik/my-aws-devops-projects/master/aws/projects/004-phonebook-web-application/templates/add-update.html -P /home/ec2-user/templates
+                wget https://raw.githubusercontent.com/kopuskopecik/my-aws-devops-projects/master/aws/projects/004-phonebook-web-application/templates/delete.html -P /home/ec2-user/templates
+                wget https://raw.githubusercontent.com/kopuskopecik/my-aws-devops-projects/master/aws/projects/004-phonebook-web-application/templates/index.html -P /home/ec2-user/templates
+              - Merhaba: !GetAtt AppNodeSG.GroupId
+  AppNodeSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: for the app nodes that allow ssh, http and docker ports
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 0.0.0.0/0
