@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: | 
+  Kittens Carousel Static Website deployed on AWS Cloudfront, S3 and Route 53 using Cloudformation
+  
+Parameters:
+  
+Resources:
+  S3AccessPointID:
+    Type: "AWS::S3::AccessPoint"
+    Properties:
+      Name: String
+      Bucket: String #required
+      VpcConfiguration:
+        VpcConfiguration
+      PublicAccessBlockConfiguration:
+        PublicAccessBlockConfiguration
+      Policy: Json
+      PolicyStatus: Json
+      NetworkOrigin: String
+      CreationDate: String
+  
+  S3BucketID:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      AccelerateConfiguration:
+        AccelerateConfiguration
+      AccessControl: String
+      AnalyticsConfigurations:
+        - AnalyticsConfiguration
+      BucketEncryption:
+        BucketEncryption
+      BucketName: String
+      CorsConfiguration:
+        CorsConfiguration
+      InventoryConfigurations:
+        - InventoryConfiguration
+      LifecycleConfiguration:
+        LifecycleConfiguration
+      LoggingConfiguration:
+        LoggingConfiguration
+      MetricsConfigurations:
+        - MetricsConfiguration
+      NotificationConfiguration:
+        NotificationConfiguration
+      ObjectLockConfiguration:
+        ObjectLockConfiguration
+      ObjectLockEnabled: Boolean
+      PublicAccessBlockConfiguration:
+        PublicAccessBlockConfiguration
+      ReplicationConfiguration:
+        ReplicationConfiguration
+      Tags:
+        - Tag
+      VersioningConfiguration:
+        VersioningConfiguration
+      WebsiteConfiguration:
+        WebsiteConfiguration
+  
+  BucketPolicyID:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: String #required
+      PolicyDocument: Json #required
+  
+Outputs:

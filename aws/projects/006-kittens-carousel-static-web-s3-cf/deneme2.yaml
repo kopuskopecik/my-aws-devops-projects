@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: | 
+  Kittens Carousel Static Website deployed on AWS Cloudfront, S3 and Route 53 using Cloudformation
+
+Parameters:
+    DNSName:
+      Description: Please enter your DNS adress
+      Type: String
+    
+    FullDNSName:
+      Description: Please enter your Full DNS adress
+      Type: String
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      AccessControl: PublicRead
+      BucketName: erdo-public-bucket
+      MetricsConfigurations: 
+        - Id: EntireBucket
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  
+  S3BucketPolicyID:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: erdo-public-bucket
+      PolicyDocument:
+        Statement:
+          - Action: 's3:GetObject'
+            Effect: Allow
+            Resource: 
+              'Fn::Join':
+                - ''
+                - - 'arn:aws:s3:::'
+                  - erdo-public-bucket
+                  - /*
+            Principal: '*'
+
+        
+  
+
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt [S3Bucket, WebsiteURL]
+    Description: URL for website hosted on S3
+  S3BucketSecureURL:
+    Value: !Join ['', ['https://', !GetAtt [S3Bucket, DomainName]]]
+    Description: Name of S3 bucket to hold website content
